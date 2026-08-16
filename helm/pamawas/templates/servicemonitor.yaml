@@ -1,0 +1,86 @@
+{{- if .Values.serviceMonitors.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "pamawas.fullname" . }}-ingest
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    release: {{ .Values.serviceMonitors.release }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "pamawas.fullname" . }}-ingest
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: {{ .Values.serviceMonitors.interval }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "pamawas.fullname" . }}-correlator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    release: {{ .Values.serviceMonitors.release }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "pamawas.fullname" . }}-correlator
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: {{ .Values.serviceMonitors.interval }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "pamawas.fullname" . }}-investigator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    release: {{ .Values.serviceMonitors.release }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "pamawas.fullname" . }}-investigator
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: {{ .Values.serviceMonitors.interval }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "pamawas.fullname" . }}-reporter
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    release: {{ .Values.serviceMonitors.release }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "pamawas.fullname" . }}-reporter
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: {{ .Values.serviceMonitors.interval }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "pamawas.fullname" . }}-scheduler
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    release: {{ .Values.serviceMonitors.release }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "pamawas.fullname" . }}-scheduler
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: {{ .Values.serviceMonitors.interval }}
+{{- end }}

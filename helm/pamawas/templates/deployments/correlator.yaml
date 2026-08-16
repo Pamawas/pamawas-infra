@@ -1,0 +1,78 @@
+{{- if .Values.correlator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pamawas.fullname" . }}-correlator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    app: {{ include "pamawas.fullname" . }}-correlator
+spec:
+  replicas: {{ .Values.correlator.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "pamawas.fullname" . }}-correlator
+  template:
+    metadata:
+      labels:
+        app: {{ include "pamawas.fullname" . }}-correlator
+        {{- include "pamawas.selectorLabels" . | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.commonConfig.port }}"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: {{ include "pamawas.serviceAccountName" . }}
+      containers:
+        - name: correlator
+          image: "{{ .Values.global.imageRegistry }}/pamawas/pamawas-correlator:{{ .Values.correlator.image.tag }}"
+          imagePullPolicy: {{ .Values.correlator.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.commonConfig.port }}
+              name: http
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-secrets
+                  key: DATABASE_URL
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: PORT
+            - name: CORRELATION_TIME_WINDOW
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: CORRELATION_TIME_WINDOW
+            - name: CORRELATION_INTERVAL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: CORRELATION_INTERVAL
+            - name: CORRELATOR_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: CORRELATOR_MODE
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: LOG_LEVEL
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: ENVIRONMENT
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: OTEL_EXPORTER_OTLP_ENDPOINT
+          {{- include "pamawas.probes" .Values.correlator.probes | nindent 12 }}
+          resources:
+            {{- toYaml .Values.correlator.resources | nindent 12 }}
+      serviceAccountName: {{ include "pamawas.serviceAccountName" . }}
+{{- end }}

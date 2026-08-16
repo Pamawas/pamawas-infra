@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pamawas.fullname" . }}-ingest
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    app: {{ include "pamawas.fullname" . }}-ingest
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.commonConfig.port }}
+      targetPort: {{ .Values.commonConfig.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "pamawas.fullname" . }}-ingest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pamawas.fullname" . }}-correlator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    app: {{ include "pamawas.fullname" . }}-correlator
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.commonConfig.port }}
+      targetPort: {{ .Values.commonConfig.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "pamawas.fullname" . }}-correlator
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pamawas.fullname" . }}-investigator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    app: {{ include "pamawas.fullname" . }}-investigator
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.commonConfig.port }}
+      targetPort: {{ .Values.commonConfig.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "pamawas.fullname" . }}-investigator
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pamawas.fullname" . }}-reporter
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    app: {{ include "pamawas.fullname" . }}-reporter
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.commonConfig.port }}
+      targetPort: {{ .Values.commonConfig.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "pamawas.fullname" . }}-reporter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pamawas.fullname" . }}-scheduler
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    app: {{ include "pamawas.fullname" . }}-scheduler
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.commonConfig.port }}
+      targetPort: {{ .Values.commonConfig.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "pamawas.fullname" . }}-scheduler

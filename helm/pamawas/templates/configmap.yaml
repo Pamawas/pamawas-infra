@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ include \"pamawas.fullname\" . }}-config"
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "pamawas.labels" . | indent 4 }}
+data:
+  PORT: "{{ .Values.commonConfig.port }}"
+  LOG_LEVEL: "{{ .Values.commonConfig.logLevel }}"
+  ENVIRONMENT: "{{ .Values.commonConfig.environment }}"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.commonConfig.otelEndpoint }}"
+  
+  CORRELATION_TIME_WINDOW: "{{ .Values.correlator.config.timeWindow }}"
+  CORRELATION_INTERVAL: "{{ .Values.correlator.config.interval }}"
+  CORRELATOR_MODE: "{{ .Values.correlator.config.mode }}"
+  
+  REPORTER_URL: "{{ .Values.scheduler.config.reporterUrl }}"
+  DAILY_REPORT_TIME: "{{ .Values.scheduler.config.dailyReportTime }}"
+  HIGH_SEVERITY_THRESHOLD: "{{ .Values.scheduler.config.highSeverityThreshold }}"
+  CHECK_INTERVAL: "{{ .Values.scheduler.config.checkInterval }}"
+  ENABLE_DAILY_REPORT: "{{ .Values.scheduler.config.enableDailyReport }}"
+  ENABLE_HIGH_SEVERITY_ALERT: "{{ .Values.scheduler.config.enableHighSeverityAlert }}"
+  SCHEDULER_MODE: "{{ .Values.scheduler.config.mode }}"
+  
+  REPORT_INTERVAL: "{{ .Values.reporter.config.reportInterval }}"
+  REPORTER_MODE: "{{ .Values.reporter.config.mode }}"
+  
+  LLM_BASE_URL: "{{ .Values.investigator.config.llmBaseUrl }}"
+  LLM_MODEL: "{{ .Values.investigator.config.llmModel }}"
+  PROMETHEUS_URL: "{{ .Values.investigator.config.prometheusUrl }}"
+  LOKI_URL: "{{ .Values.investigator.config.lokiUrl }}"
+  MAX_TOOL_CALLS: "{{ .Values.investigator.config.maxToolCalls }}"

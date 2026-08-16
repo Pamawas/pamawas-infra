@@ -1,0 +1,98 @@
+{{- if .Values.scheduler.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pamawas.fullname" . }}-scheduler
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    app: {{ include "pamawas.fullname" . }}-scheduler
+spec:
+  replicas: {{ .Values.scheduler.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "pamawas.fullname" . }}-scheduler
+  template:
+    metadata:
+      labels:
+        app: {{ include "pamawas.fullname" . }}-scheduler
+        {{- include "pamawas.selectorLabels" . | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.commonConfig.port }}"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: {{ include "pamawas.serviceAccountName" . }}
+      containers:
+        - name: scheduler
+          image: "{{ .Values.global.imageRegistry }}/pamawas/pamawas-scheduler:{{ .Values.scheduler.image.tag }}"
+          imagePullPolicy: {{ .Values.scheduler.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.commonConfig.port }}
+              name: http
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-secrets
+                  key: DATABASE_URL
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: PORT
+            - name: REPORTER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: REPORTER_URL
+            - name: DAILY_REPORT_TIME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: DAILY_REPORT_TIME
+            - name: HIGH_SEVERITY_THRESHOLD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: HIGH_SEVERITY_THRESHOLD
+            - name: CHECK_INTERVAL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: CHECK_INTERVAL
+            - name: ENABLE_DAILY_REPORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: ENABLE_DAILY_REPORT
+            - name: ENABLE_HIGH_SEVERITY_ALERT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: ENABLE_HIGH_SEVERITY_ALERT
+            - name: SCHEDULER_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: SCHEDULER_MODE
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: LOG_LEVEL
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: ENVIRONMENT
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: OTEL_EXPORTER_OTLP_ENDPOINT
+          {{- include "pamawas.probes" .Values.scheduler.probes | nindent 12 }}
+          resources:
+            {{- toYaml .Values.scheduler.resources | nindent 12 }}
+      serviceAccountName: {{ include "pamawas.serviceAccountName" . }}
+{{- end }}

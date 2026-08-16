@@ -1,0 +1,93 @@
+{{- if .Values.investigator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pamawas.fullname" . }}-investigator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    app: {{ include "pamawas.fullname" . }}-investigator
+spec:
+  replicas: {{ .Values.investigator.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "pamawas.fullname" . }}-investigator
+  template:
+    metadata:
+      labels:
+        app: {{ include "pamawas.fullname" . }}-investigator
+        {{- include "pamawas.selectorLabels" . | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.commonConfig.port }}"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: {{ include "pamawas.serviceAccountName" . }}
+      containers:
+        - name: investigator
+          image: "{{ .Values.global.imageRegistry }}/pamawas/pamawas-investigator:{{ .Values.investigator.image.tag }}"
+          imagePullPolicy: {{ .Values.investigator.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.commonConfig.port }}
+              name: http
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-secrets
+                  key: DATABASE_URL
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: PORT
+            - name: LLM_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: LLM_BASE_URL
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-secrets
+                  key: LLM_API_KEY
+            - name: LLM_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: LLM_MODEL
+            - name: PROMETHEUS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: PROMETHEUS_URL
+            - name: LOKI_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: LOKI_URL
+            - name: MAX_TOOL_CALLS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: MAX_TOOL_CALLS
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: LOG_LEVEL
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: ENVIRONMENT
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: OTEL_EXPORTER_OTLP_ENDPOINT
+          {{- include "pamawas.probes" .Values.investigator.probes | nindent 12 }}
+          resources:
+            {{- toYaml .Values.investigator.resources | nindent 12 }}
+      serviceAccountName: {{ include "pamawas.serviceAccountName" . }}
+{{- end }}

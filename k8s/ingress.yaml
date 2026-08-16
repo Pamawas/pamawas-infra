@@ -1,0 +1,93 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pamawas-ingress
+  namespace: pamawas
+  labels:
+    app.kubernetes.io/name: pamawas
+    app.kubernetes.io/part-of: pamawas
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+spec:
+  tls:
+    - hosts:
+        - pamawas.example.com
+      secretName: pamawas-tls
+  rules:
+    - host: pamawas.example.com
+      http:
+        paths:
+          - path: /webhook
+            pathType: Prefix
+            backend:
+              service:
+                name: pamawas-ingest
+                port:
+                  number: 8080
+          - path: /healthz
+            pathType: Exact
+            backend:
+              service:
+                name: pamawas-ingest
+                port:
+                  number: 8080
+          - path: /ready
+            pathType: Exact
+            backend:
+              service:
+                name: pamawas-ingest
+                port:
+                  number: 8080
+          - path: /metrics
+            pathType: Exact
+            backend:
+              service:
+                name: pamawas-ingest
+                port:
+                  number: 8080
+          - path: /trigger
+            pathType: Prefix
+            backend:
+              service:
+                name: pamawas-correlator
+                port:
+                  number: 8080
+          - path: /status
+            pathType: Prefix
+            backend:
+              service:
+                name: pamawas-correlator
+                port:
+                  number: 8080
+          - path: /investigate
+            pathType: Prefix
+            backend:
+              service:
+                name: pamawas-investigator
+                port:
+                  number: 8080
+          - path: /report
+            pathType: Prefix
+            backend:
+              service:
+                name: pamawas-reporter
+                port:
+                  number: 8080
+          - path: /trigger/daily
+            pathType: Exact
+            backend:
+              service:
+                name: pamawas-scheduler
+                port:
+                  number: 8080
+          - path: /trigger/high-severity
+            pathType: Exact
+            backend:
+              service:
+                name: pamawas-scheduler
+                port:
+                  number: 8080

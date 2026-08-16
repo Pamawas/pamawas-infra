@@ -1,0 +1,89 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pamawas-ingest
+  namespace: pamawas
+  labels:
+    app: pamawas-ingest
+    app.kubernetes.io/name: pamawas-ingest
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: pamawas-ingest
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pamawas-correlator
+  namespace: pamawas
+  labels:
+    app: pamawas-correlator
+    app.kubernetes.io/name: pamawas-correlator
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: pamawas-correlator
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pamawas-investigator
+  namespace: pamawas
+  labels:
+    app: pamawas-investigator
+    app.kubernetes.io/name: pamawas-investigator
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: pamawas-investigator
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pamawas-reporter
+  namespace: pamawas
+  labels:
+    app: pamawas-reporter
+    app.kubernetes.io/name: pamawas-reporter
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: pamawas-reporter
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pamawas-scheduler
+  namespace: pamawas
+  labels:
+    app: pamawas-scheduler
+    app.kubernetes.io/name: pamawas-scheduler
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: pamawas-scheduler
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s

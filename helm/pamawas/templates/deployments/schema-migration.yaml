@@ -1,0 +1,52 @@
+{{- if .Values.schemaMigration.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "pamawas.fullname" . }}-schema-migration
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "pamawas.labels" . | nindent 4 }}
+    app: {{ include "pamawas.fullname" . }}-schema-migration
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ include "pamawas.fullname" . }}-schema-migration
+        {{- include "pamawas.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "pamawas.serviceAccountName" . }}
+      restartPolicy: OnFailure
+      containers:
+        - name: schema-migration
+          image: "{{ .Values.global.imageRegistry }}/pamawas/pamawas-schema:{{ .Values.schemaMigration.image.tag }}"
+          imagePullPolicy: {{ .Values.schemaMigration.image.pullPolicy }}
+          command: ["pamawas-schema", "migrate"]
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-secrets
+                  key: DATABASE_URL
+            - name: USE_EMBEDDED_MIGRATIONS
+              value: "true"
+            - name: PORT
+              value: "{{ .Values.commonConfig.port }}"
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: LOG_LEVEL
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: ENVIRONMENT
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: OTEL_EXPORTER_OTLP_ENDPOINT
+          resources:
+            {{- toYaml .Values.schemaMigration.resources | nindent 12 }}
+      backoffLimit: {{ .Values.schemaMigration.backoffLimit }}
+{{- end }}
