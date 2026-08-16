@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ include \"pamawas.fullname\" . }}-config"
+  name: "{{ include "pamawas.fullname" . }}-config"
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "pamawas.labels" . | indent 4 }}
+{{- include "pamawas.labels" . | nindent 4 }}
 data:
   PORT: "{{ .Values.commonConfig.port }}"
   LOG_LEVEL: "{{ .Values.commonConfig.logLevel }}"
