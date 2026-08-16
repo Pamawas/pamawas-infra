@@ -29,7 +29,8 @@ jobs:
       
       - name: Validate docker-compose.yml
         run: |
-          docker-compose -f docker-compose/docker-compose.yml config --quiet
+          cd docker-compose
+          docker-compose -f docker-compose.yml config --quiet
           echo "docker-compose.yml is valid"
 
   lint-k8s:

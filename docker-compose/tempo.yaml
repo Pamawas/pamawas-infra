@@ -1,4 +1,3 @@
----
 # Tempo configuration for Pamawas
 server:
   http_listen_port: 3200
