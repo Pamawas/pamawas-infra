@@ -76,10 +76,10 @@ Container resource limits/requests
 
 {{/*
 Probe configuration - accepts port as parameter
-Usage: {{- include "pamawas.probes" (dict "port" $.Values.commonConfig.port "values" .Values) | nindent 12 }}
+Usage: {{- include "pamawas.probes" (dict "port" .Values.commonConfig.port "values" .Values) | nindent 12 }}
 */}}
 {{- define "pamawas.probes" -}}
-{{- $port := .port | default $.Values.commonConfig.port | default .Values.probes.liveness.httpGet.port | default 8080 }}
+{{- $port := .port | default 8080 }}
 livenessProbe:
   httpGet:
     path: /healthz
