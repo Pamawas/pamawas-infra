@@ -24,13 +24,11 @@ services:
       - pamawas-network
 
   pamawas-migrations:
-    build:
-      context: ../../pamawas-schema
-      dockerfile: Dockerfile
+    image: ghcr.io/pamawas/pamawas-schema:latest
     container_name: pamawas-migrations
     environment:
-      DATABASE_URL: "postgres://${POSTGRES_USER:-pamawas}:${POSTGRES_PASSWORD:-pamawas}@postgresql:5432/${POSTGRES_DB:-pamawas}?sslmode=disable"
-      USE_EMBEDDED_MIGRATIONS: "true"
+          DATABASE_URL: "postgres://${POSTGRES_USER:-pamawas}:${POSTGRES_PASSWORD:-pamawas}@postgresql:5432/${POSTGRES_DB:-pamawas}?sslmode=disable"
+          USE_EMBEDDED_MIGRATIONS: "true"
     depends_on:
       postgresql:
         condition: service_healthy
