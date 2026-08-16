@@ -75,19 +75,21 @@ Container resource limits/requests
 {{- end }}
 
 {{/*
-Probe configuration
+Probe configuration - accepts port as parameter
+Usage: {{- include "pamawas.probes" (dict "port" $.Values.commonConfig.port "values" .Values) | nindent 12 }}
 */}}
 {{- define "pamawas.probes" -}}
+{{- $port := .port | default $.Values.commonConfig.port | default .Values.probes.liveness.httpGet.port | default 8080 }}
 livenessProbe:
   httpGet:
     path: /healthz
-    port: {{ $.Values.commonConfig.port | default .Values.probes.liveness.httpGet.port | default 8080 }}
+    port: {{ $port }}
   initialDelaySeconds: {{ .Values.liveness.initialDelaySeconds | default .Values.probes.liveness.initialDelaySeconds }}
   periodSeconds: {{ .Values.liveness.periodSeconds | default .Values.probes.liveness.periodSeconds }}
 readinessProbe:
   httpGet:
     path: /ready
-    port: {{ $.Values.commonConfig.port | default .Values.probes.readiness.httpGet.port | default 8080 }}
+    port: {{ $port }}
   initialDelaySeconds: {{ .Values.readiness.initialDelaySeconds | default .Values.probes.readiness.initialDelaySeconds }}
   periodSeconds: {{ .Values.readiness.periodSeconds | default .Values.probes.readiness.periodSeconds }}
 {{- end }}

@@ -91,7 +91,7 @@ spec:
                 configMapKeyRef:
                   name: {{ include "pamawas.fullname" . }}-config
                   key: OTEL_EXPORTER_OTLP_ENDPOINT
-          {{- include "pamawas.probes" .Values.scheduler.probes | nindent 12 }}
+          {{- include "pamawas.probes" (dict "port" $.Values.commonConfig.port "values" .Values) | nindent 12 }}
           resources:
             {{- toYaml .Values.scheduler.resources | nindent 12 }}
       serviceAccountName: {{ include "pamawas.serviceAccountName" . }}
