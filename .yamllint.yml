@@ -9,9 +9,12 @@ rules:
     level: warning
   key-ordering:
     level: warning
+  new-line-at-end-of-file:
+    level: warning
 ignore: |
   .git
   node_modules
   __pycache__
   .venv
   vendor
+  docker-compose/
