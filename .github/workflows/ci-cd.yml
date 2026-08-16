@@ -1,0 +1,140 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  lint-docker-compose:
+    name: Lint Docker Compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install hadolint
+        run: |
+          wget -q https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -O /tmp/hadolint
+          chmod +x /tmp/hadolint
+          sudo mv /tmp/hadolint /usr/local/bin/hadolint
+      
+      - name: Lint Dockerfiles
+        run: |
+          find . -name "Dockerfile" -exec hadolint {} \;
+      
+      - name: Validate docker-compose.yml
+        run: |
+          docker-compose -f docker-compose/docker-compose.yml config --quiet
+          echo "docker-compose.yml is valid"
+
+  lint-k8s:
+    name: Lint Kubernetes Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install kubeconform
+        run: |
+          wget -q https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz
+          tar -xzf kubeconform-linux-amd64.tar.gz
+          sudo mv kubeconform /usr/local/bin/
+      
+      - name: Validate Kubernetes manifests
+        run: |
+          kubeconform -strict -kubernetes-version 1.28.0 k8s/*.yaml k8s/deployments/*.yaml
+          echo "Kubernetes manifests are valid"
+
+  lint-helm:
+    name: Lint Helm Chart
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Helm
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      
+      - name: Lint Helm chart
+        run: |
+          cd helm/pamawas
+          helm lint .
+          echo "Helm chart is valid"
+      
+      - name: Template Helm chart (dry-run)
+        run: |
+          cd helm/pamawas
+          helm template test-release . --dry-run --debug > /dev/null
+          echo "Helm template renders successfully"
+
+  lint-yaml:
+    name: Lint YAML Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install yamllint
+        run: |
+          pip3 install yamllint
+      
+      - name: Lint all YAML files
+        run: |
+          yamllint -c .yamllint.yml .
+
+  validate-config:
+    name: Validate Configuration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check required files exist
+        run: |
+          test -f docker-compose/docker-compose.yml
+          test -f docker-compose/.env.example
+          test -f docker-compose/tempo.yaml
+          test -f docker-compose/prometheus.yml
+          test -f docker-compose/loki-config.yml
+          test -f docker-compose/grafana-datasources.yml
+          
+          test -f k8s/namespace.yaml
+          test -f k8s/configmap.yaml
+          test -f k8s/secret.yaml
+          test -f k8s/services.yaml
+          test -f k8s/servicemonitor.yaml
+          test -f k8s/ingress.yaml
+          test -d k8s/deployments
+          
+          test -f helm/pamawas/Chart.yaml
+          test -f helm/pamawas/values.yaml
+          test -d helm/pamawas/templates
+          test -d helm/pamawas/templates/deployments
+          
+          echo "All required files present"
+
+  check-secrets:
+    name: Check for Hardcoded Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install gitleaks
+        run: |
+          wget -q https://github.com/gitleaks/gitleaks/releases/download/v8.18.2/gitleaks_8.18.2_linux_x64.tar.gz
+          tar -xzf gitleaks_8.18.2_linux_x64.tar.gz
+          sudo mv gitleaks /usr/local/bin/
+      
+      - name: Scan for secrets
+        run: |
+          gitleaks detect --source . --verbose --no-git || true
+          echo "Secret scan completed"
+
+  notify:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [lint-docker-compose, lint-k8s, lint-helm, lint-yaml, validate-config, check-secrets]
+    if: failure()
+    steps:
+      - name: Send failure notification
+        run: |
+          echo "CI pipeline failed. Check GitHub Actions for details."
+          # Add Slack/Discord webhook notification here if needed

@@ -1,0 +1,21 @@
+# Helm ignore patterns
+.git
+.github
+.gitignore
+.yamllint.yml
+Dockerfile
+docker-compose*
+k8s/
+*.md
+*.txt
+*.example
+*.sh
+.env*
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+.helmignore
+Chart.lock

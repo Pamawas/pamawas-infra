@@ -1,0 +1,258 @@
+# Production values for Pamawas Helm chart
+# Copy this file and fill in your actual values
+
+global:
+  imageRegistry: ghcr.io
+  imagePullSecrets: []
+  deployObservabilityStack: false
+
+# Service account
+serviceAccount:
+  create: true
+  name: pamawas
+  annotations: {}
+
+# Common configuration
+commonConfig:
+  port: 8080
+  logLevel: info
+  environment: production
+  otelEndpoint: "tempo.example.com:4317"
+
+# Ingest service
+ingest:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: ghcr.io/pamawas/pamawas-ingest
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  config:
+    correlationTimeWindow: 10m
+    correlationInterval: 1m
+  probes:
+    liveness:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+
+# Correlator service
+correlator:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: ghcr.io/pamawas/pamawas-correlator
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  config:
+    timeWindow: 10m
+    interval: 1m
+    mode: auto
+  probes:
+    liveness:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+
+# Investigator service
+investigator:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: ghcr.io/pamawas/pamawas-investigator
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  config:
+    llmBaseUrl: "https://api.openai.com/v1"
+    llmModel: "gpt-4o-mini"
+    prometheusUrl: "http://prometheus.example.com:9090"
+    lokiUrl: "http://loki.example.com:3100"
+    maxToolCalls: 6
+  probes:
+    liveness:
+      initialDelaySeconds: 15
+      periodSeconds: 10
+    readiness:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+
+# Reporter service
+reporter:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: ghcr.io/pamawas/pamawas-reporter
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  config:
+    reportInterval: 1h
+    mode: auto
+  probes:
+    liveness:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+
+# Scheduler service
+scheduler:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: ghcr.io/pamawas/pamawas-scheduler
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  config:
+    reporterUrl: "http://pamawas-reporter:8080"
+    dailyReportTime: "07:00"
+    highSeverityThreshold: "high"
+    checkInterval: "30s"
+    enableDailyReport: true
+    enableHighSeverityAlert: true
+    mode: auto
+  probes:
+    liveness:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+
+# Schema migration job
+schemaMigration:
+  enabled: true
+  image:
+    repository: ghcr.io/pamawas/pamawas-schema
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  backoffLimit: 3
+
+# External dependencies (user-managed)
+external:
+  postgresql:
+    host: "postgresql.example.com"
+    port: 5432
+    database: "pamawas"
+    existingSecret: "pamawas-postgresql"
+  
+  tempo:
+    endpoint: "tempo.example.com:4317"
+  
+  loki:
+    endpoint: "http://loki.example.com:3100"
+  
+  prometheus:
+    endpoint: "http://prometheus.example.com:9090"
+
+# Delivery credentials (reporter)
+delivery:
+  discordWebhookUrl: ""
+  telegramBotToken: ""
+  telegramChatId: ""
+  email:
+    smtpHost: ""
+    smtpPort: 587
+    username: ""
+    password: ""
+    from: ""
+    to: ""
+
+# LLM configuration (investigator)
+llm:
+  baseUrl: "https://api.openai.com/v1"
+  apiKey: ""
+  model: "gpt-4o-mini"
+
+# ServiceMonitors (requires prometheus-operator)
+serviceMonitors:
+  enabled: true
+  release: prometheus
+  interval: 30s
+
+# Ingress
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+  hosts:
+    - host: pamawas.example.com
+      paths:
+        - path: /webhook
+          service: ingest
+        - path: /healthz
+          service: ingest
+        - path: /ready
+          service: ingest
+        - path: /metrics
+          service: ingest
+        - path: /trigger
+          service: correlator
+        - path: /status
+          service: correlator
+        - path: /investigate
+          service: investigator
+        - path: /report
+          service: reporter
+        - path: /trigger/daily
+          service: scheduler
+        - path: /trigger/high-severity
+          service: scheduler
+  tls:
+    - secretName: pamawas-tls
+      hosts:
+        - pamawas.example.com
+
+# Network policies
+networkPolicy:
+  enabled: false

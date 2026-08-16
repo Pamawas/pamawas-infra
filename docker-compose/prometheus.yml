@@ -1,0 +1,32 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'pamawas-ingest'
+    static_configs:
+      - targets: ['pamawas-ingest:8080']
+
+  - job_name: 'pamawas-correlator'
+    static_configs:
+      - targets: ['pamawas-correlator:8080']
+
+  - job_name: 'pamawas-investigator'
+    static_configs:
+      - targets: ['pamawas-investigator:8080']
+
+  - job_name: 'pamawas-reporter'
+    static_configs:
+      - targets: ['pamawas-reporter:8080']
+
+  - job_name: 'pamawas-scheduler'
+    static_configs:
+      - targets: ['pamawas-scheduler:8080']
+
+  - job_name: 'tempo'
+    static_configs:
+      - targets: ['tempo:3200']
