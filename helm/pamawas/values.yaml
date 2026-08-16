@@ -1,6 +1,9 @@
 # Default values for Pamawas Helm chart
 # For production, override with values-prod.yaml
 
+# Fullname override (optional)
+fullnameOverride: ""
+
 global:
   imageRegistry: ghcr.io
   imagePullSecrets: []
