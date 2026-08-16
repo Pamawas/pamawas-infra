@@ -12,12 +12,12 @@ data:
   LOG_LEVEL: "info"
   ENVIRONMENT: "production"
   OTEL_EXPORTER_OTLP_ENDPOINT: "tempo.example.com:4317"
-  
+
   # Correlator
   CORRELATION_TIME_WINDOW: "10m"
   CORRELATION_INTERVAL: "1m"
   CORRELATOR_MODE: "auto"
-  
+
   # Scheduler
   REPORTER_URL: "http://pamawas-reporter:8080"
   DAILY_REPORT_TIME: "07:00"
@@ -26,11 +26,11 @@ data:
   ENABLE_DAILY_REPORT: "true"
   ENABLE_HIGH_SEVERITY_ALERT: "true"
   SCHEDULER_MODE: "auto"
-  
+
   # Reporter
   REPORT_INTERVAL: "1h"
   REPORTER_MODE: "auto"
-  
+
   # Investigator
   LLM_BASE_URL: "https://api.openai.com/v1"
   LLM_MODEL: "gpt-4o-mini"

@@ -18,3 +18,4 @@ ignore: |
   .venv
   vendor
   docker-compose/
+  helm/pamawas/templates/

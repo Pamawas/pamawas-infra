@@ -190,13 +190,13 @@ external:
     database: "pamawas"
     existingSecret: "pamawas-postgresql"
     # secret keys: username, password
-  
+
   tempo:
     endpoint: "tempo.example.com:4317"
-  
+
   loki:
     endpoint: "http://loki.example.com:3100"
-  
+
   prometheus:
     endpoint: "http://prometheus.example.com:9090"
 
@@ -216,14 +216,9 @@ delivery:
 # LLM configuration (investigator)
 llm:
   baseUrl: "https://api.openai.com/v1"
-  apiKey: ""
+  apiKey: "REPLACE_ME"
   model: "gpt-4o-mini"
 
-# Service account
-serviceAccount:
-  create: true
-  name: pamawas
-  annotations: {}
 
 # Prometheus ServiceMonitors (requires prometheus-operator CRDs)
 serviceMonitors:

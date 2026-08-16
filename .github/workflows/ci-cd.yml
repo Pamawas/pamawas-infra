@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [main, dev]
   pull_request:
-    branches: [ main, dev ]
+    branches: [main, dev]
 
 jobs:
   lint-docker-compose:
@@ -12,21 +12,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install docker-compose
         run: |
           sudo apt-get update && sudo apt-get install -y docker-compose
-      
+
       - name: Install hadolint
         run: |
           wget -q https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -O /tmp/hadolint
           chmod +x /tmp/hadolint
           sudo mv /tmp/hadolint /usr/local/bin/hadolint
-      
+
       - name: Lint Dockerfiles
         run: |
           find . -name "Dockerfile" -exec hadolint {} \;
-      
+
       - name: Validate docker-compose.yml
         run: |
           cd docker-compose
@@ -38,18 +38,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install kubeconform
         run: |
           wget -q https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz
           tar -xzf kubeconform-linux-amd64.tar.gz
           sudo mv kubeconform /usr/local/bin/
-      
+
       - name: Install Prometheus Operator CRDs
         run: |
           kubectl apply --server-side -f https://github.com/prometheus-operator/prometheus-operator/releases/latest/download/bundle.yaml 2>/dev/null || true
           sleep 5
-      
+
       - name: Validate Kubernetes manifests
         run: |
           kubeconform -strict -kubernetes-version 1.28.0 -skip ServiceMonitor k8s/*.yaml k8s/deployments/*.yaml
@@ -60,17 +60,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install Helm
         run: |
           curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-      
+
       - name: Lint Helm chart
         run: |
           cd helm/pamawas
           helm lint .
           echo "Helm chart is valid"
-      
+
       - name: Template Helm chart (dry-run)
         run: |
           cd helm/pamawas
@@ -82,11 +82,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install yamllint
         run: |
           pip3 install yamllint
-      
+
       - name: Lint all YAML files
         run: |
           yamllint -c .yamllint.yml .
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check required files exist
         run: |
           test -f docker-compose/docker-compose.yml
@@ -105,7 +105,7 @@ jobs:
           test -f docker-compose/prometheus.yml
           test -f docker-compose/loki-config.yml
           test -f docker-compose/grafana-datasources.yml
-          
+
           test -f k8s/namespace.yaml
           test -f k8s/configmap.yaml
           test -f k8s/secret.yaml
@@ -113,12 +113,12 @@ jobs:
           test -f k8s/servicemonitor.yaml
           test -f k8s/ingress.yaml
           test -d k8s/deployments
-          
+
           test -f helm/pamawas/Chart.yaml
           test -f helm/pamawas/values.yaml
           test -d helm/pamawas/templates
           test -d helm/pamawas/templates/deployments
-          
+
           echo "All required files present"
 
   check-secrets:
@@ -126,13 +126,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install gitleaks
         run: |
           wget -q https://github.com/gitleaks/gitleaks/releases/download/v8.18.2/gitleaks_8.18.2_linux_x64.tar.gz
           tar -xzf gitleaks_8.18.2_linux_x64.tar.gz
           sudo mv gitleaks /usr/local/bin/
-      
+
       - name: Scan for secrets
         run: |
           gitleaks detect --source . --verbose --no-git || true

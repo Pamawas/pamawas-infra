@@ -181,13 +181,13 @@ external:
     port: 5432
     database: "pamawas"
     existingSecret: "pamawas-postgresql"
-  
+
   tempo:
     endpoint: "tempo.example.com:4317"
-  
+
   loki:
     endpoint: "http://loki.example.com:3100"
-  
+
   prometheus:
     endpoint: "http://prometheus.example.com:9090"
 
@@ -207,7 +207,7 @@ delivery:
 # LLM configuration (investigator)
 llm:
   baseUrl: "https://api.openai.com/v1"
-  apiKey: ""
+  apiKey: "REPLACE_ME"
   model: "gpt-4o-mini"
 
 # ServiceMonitors (requires prometheus-operator)
