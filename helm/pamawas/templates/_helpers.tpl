@@ -81,13 +81,13 @@ Probe configuration
 livenessProbe:
   httpGet:
     path: /healthz
-    port: {{ .Values.commonConfig.port }}
-  initialDelaySeconds: {{ .Values.liveness.initialDelaySeconds }}
-  periodSeconds: {{ .Values.liveness.periodSeconds }}
+    port: {{ .Values.commonConfig.port | default .Values.probes.liveness.httpGet.port | default 8080 }}
+  initialDelaySeconds: {{ .Values.liveness.initialDelaySeconds | default .Values.probes.liveness.initialDelaySeconds }}
+  periodSeconds: {{ .Values.liveness.periodSeconds | default .Values.probes.liveness.periodSeconds }}
 readinessProbe:
   httpGet:
     path: /ready
-    port: {{ .Values.commonConfig.port }}
-  initialDelaySeconds: {{ .Values.readiness.initialDelaySeconds }}
-  periodSeconds: {{ .Values.readiness.periodSeconds }}
+    port: {{ .Values.commonConfig.port | default .Values.probes.readiness.httpGet.port | default 8080 }}
+  initialDelaySeconds: {{ .Values.readiness.initialDelaySeconds | default .Values.probes.readiness.initialDelaySeconds }}
+  periodSeconds: {{ .Values.readiness.periodSeconds | default .Values.probes.readiness.periodSeconds }}
 {{- end }}
