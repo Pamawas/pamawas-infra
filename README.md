@@ -1,37 +1,35 @@
 # pamawas-infra
 
-**Infrastructure Deployments** — Docker Compose (local), Kubernetes manifests, Helm chart
+**Infrastructure Deployments** — Docker Compose (local), Kubernetes manifests, Helm chart for production.
 
-## Purpose
-
-Provides infrastructure deployment options for Pamawas services. Assumes user has surrounding observability stack deployed (Grafana, Prometheus, Loki, Tempo) — this only deploys the 6 Pamawas application services.
+---
 
 ## Deployment Options
 
 | Option | Use Case |
 |--------|----------|
 | **Docker Compose** | Local development with full stack (PG, Prom, Loki, Tempo, Grafana) |
-| **Kubernetes (plain)** | Raw manifests for direct `kubectl apply` |
+| **Kubernetes (Plain)** | Raw manifests for direct `kubectl apply` |
 | **Helm Chart** | Production deployments with templating, values, dependencies |
 
 ---
 
 ## 1. Docker Compose (Local Development)
 
-Full stack including dependencies:
+Full stack including all dependencies:
 
 ```bash
 cd docker-compose
 cp .env.example .env
-# Edit .env with your keys
+# Edit .env with your keys (LLM_API_KEY, etc.)
 docker-compose up -d
 ```
 
 **Services included:**
-- PostgreSQL, Prometheus, Loki, Tempo, Grafana (infrastructure)
-- pamawas-ingest, pamawas-correlator, pamawas-investigator, pamawas-reporter, pamawas-scheduler, pamawas-schema (apps)
+- **Infrastructure**: PostgreSQL, Prometheus, Loki, Tempo, Grafana
+- **Applications**: pamawas-ingest, pamawas-correlator, pamawas-investigator, pamawas-reporter, pamawas-scheduler, pamawas-schema (migration runner)
 
-See `docker-compose/README.md` for details.
+See [docker-compose/README.md](docker-compose/README.md) for details.
 
 ---
 
@@ -66,7 +64,7 @@ kubectl apply -f ingress.yaml
 # secret.yaml - sensitive values (DB password, API keys, webhook URLs)
 ```
 
-See `k8s/README.md` for detailed configuration.
+See [k8s/README.md](k8s/README.md) for detailed configuration.
 
 ---
 
@@ -78,7 +76,7 @@ cd helm/pamawas
 # Install with custom values
 helm install pamawas . -n pamawas --create-namespace -f values-prod.yaml
 
-# Or install with dependencies (if you want Helm to deploy Prometheus/Loki/Tempo too)
+# Or install with observability stack dependencies
 helm install pamawas . -n pamawas --create-namespace --set global.deployObservabilityStack=true
 ```
 
@@ -145,7 +143,7 @@ external:
     host: "postgresql.example.com"
     port: 5432
     database: "pamawas"
-    existingSecret: "pamawas-postgresql"  # with keys: username, password
+    existingSecret: "pamawas-postgresql"  # keys: username, password
   tempo:
     endpoint: "tempo.example.com:4317"
   loki:
@@ -169,13 +167,13 @@ delivery:
 # LLM (investigator)
 llm:
   baseUrl: "https://api.openai.com/v1"
-  apiKey: ""
+  apiKey: "***"
   model: "gpt-4o-mini"
 ```
 
 ### Prometheus Scraping
 
-ServiceMonitors are included for each service. Requires `prometheus-operator` CRDs.
+ServiceMonitors included for each service. Requires `prometheus-operator` CRDs.
 
 ```bash
 # Verify ServiceMonitors
@@ -225,6 +223,7 @@ pamawas-infra/
         │   ├── namespace.yaml
         │   ├── configmap.yaml
         │   ├── secret.yaml
+        │   ├── serviceaccount.yaml
         │   ├── deployments/
         │   ├── services.yaml
         │   ├── servicemonitor.yaml
@@ -270,3 +269,11 @@ All services share common environment variables:
 | `LOG_LEVEL` | `debug` \| `info` \| `warn` \| `error` | No (default: info) |
 
 Service-specific variables documented in each component's README.
+
+---
+
+## Related
+
+- **Root README**: [../README.md](../README.md)
+- **Component READMEs**: [../pamawas-ingest/](../pamawas-ingest/) [../pamawas-correlator/](../pamawas-correlator/) [../pamawas-investigator/](../pamawas-investigator/) [../pamawas-reporter/](../pamawas-reporter/) [../pamawas-scheduler/](../pamawas-scheduler/) [../pamawas-schema/](../pamawas-schema/)
+- **Docker Images**: `ghcr.io/yoganovvaindra/pamawas-*`

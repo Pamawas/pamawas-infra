@@ -77,6 +77,9 @@ jobs:
           helm template test-release . --dry-run --debug > /dev/null
           echo "Helm template renders successfully"
 
+      - name: Validate rendered chart contracts
+        run: scripts/validate.sh
+
   lint-yaml:
     name: Lint YAML Files
     runs-on: ubuntu-latest
