@@ -38,7 +38,9 @@ services:
     image: ghcr.io/pamawas/pamawas-schema:latest
     container_name: pamawas-migrations
     environment:
-      DATABASE_URL: "postgres://${POSTGRES_USER:***@postgresql:5432/${POSTGRES_DB:-pamawas}?sslmode=disable"
+      POSTGRES_USER: ${POSTGRES_USER:-pamawas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pamawas}
+      POSTGRES_DB: ${POSTGRES_DB:-pamawas}
       USE_EMBEDDED_MIGRATIONS: "true"
       # Optional observability (disabled if empty)
       OTEL_EXPORTER_OTLP_ENDPOINT: "${TEMPO_OTLP_ENDPOINT}"
@@ -57,7 +59,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DATABASE_URL: "postgres://${POSTGRES_USER:***@postgresql:5432/${POSTGRES_DB:-pamawas}?sslmode=disable"
+      POSTGRES_USER: ${POSTGRES_USER:-pamawas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pamawas}
+      POSTGRES_DB: ${POSTGRES_DB:-pamawas}
       PORT: "8080"
       LOG_LEVEL: "info"
       ENVIRONMENT: "development"
@@ -80,7 +84,9 @@ services:
     ports:
       - "8081:8080"
     environment:
-      DATABASE_URL: "postgres://${POSTGRES_USER:***@postgresql:5432/${POSTGRES_DB:-pamawas}?sslmode=disable"
+      POSTGRES_USER: ${POSTGRES_USER:-pamawas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pamawas}
+      POSTGRES_DB: ${POSTGRES_DB:-pamawas}
       PORT: "8080"
       CORRELATION_TIME_WINDOW: "10m"
       CORRELATION_INTERVAL: "1m"
@@ -105,7 +111,9 @@ services:
     ports:
       - "8082:8080"
     environment:
-      DATABASE_URL: "postgres://${POSTGRES_USER:***@postgresql:5432/${POSTGRES_DB:-pamawas}?sslmode=disable"
+      POSTGRES_USER: ${POSTGRES_USER:-pamawas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pamawas}
+      POSTGRES_DB: ${POSTGRES_DB:-pamawas}
       PORT: "8080"
       LLM_BASE_URL: "${LLM_BASE_URL:-https://api.openai.com/v1}"
       LLM_API_KEY: "${LLM_API_KEY}"
@@ -134,7 +142,9 @@ services:
     ports:
       - "8083:8080"
     environment:
-      DATABASE_URL: "postgres://${POSTGRES_USER:***@postgresql:5432/${POSTGRES_DB:-pamawas}?sslmode=disable"
+      POSTGRES_USER: ${POSTGRES_USER:-pamawas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pamawas}
+      POSTGRES_DB: ${POSTGRES_DB:-pamawas}
       PORT: "8080"
       DISCORD_WEBHOOK_URL: "${DISCORD_WEBHOOK_URL}"
       TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN}"
@@ -167,7 +177,9 @@ services:
     ports:
       - "8084:8080"
     environment:
-      DATABASE_URL: "postgres://${POSTGRES_USER:***@postgresql:5432/${POSTGRES_DB:-pamawas}?sslmode=disable"
+      POSTGRES_USER: ${POSTGRES_USER:-pamawas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pamawas}
+      POSTGRES_DB: ${POSTGRES_DB:-pamawas}
       PORT: "8080"
       REPORTER_URL: "http://pamawas-reporter:8080"
       DAILY_REPORT_TIME: "07:00"
