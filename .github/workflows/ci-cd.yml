@@ -110,10 +110,11 @@ jobs:
         run: |
           test -f docker-compose/docker-compose.yml
           test -f docker-compose/.env.example
-          test -f docker-compose/tempo.yaml
-          test -f docker-compose/prometheus.yml
-          test -f docker-compose/loki-config.yml
-          test -f docker-compose/grafana-datasources.yml
+          # Observability configs are optional (external stack)
+          # test -f docker-compose/tempo.yaml
+          # test -f docker-compose/prometheus.yml
+          # test -f docker-compose/loki-config.yml
+          # test -f docker-compose/grafana-datasources.yml
 
           test -f k8s/namespace.yaml
           test -f k8s/configmap.yaml
