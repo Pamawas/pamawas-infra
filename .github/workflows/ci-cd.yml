@@ -11,7 +11,7 @@ jobs:
     name: Lint Docker Compose
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install docker-compose
         run: |
@@ -37,7 +37,7 @@ jobs:
     name: Lint Kubernetes Manifests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install kubeconform
         run: |
@@ -59,7 +59,7 @@ jobs:
     name: Lint Helm Chart
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Helm
         run: |
@@ -90,7 +90,7 @@ jobs:
     name: Lint YAML Files
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install yamllint
         run: |
@@ -104,7 +104,7 @@ jobs:
     name: Validate Configuration
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check required files exist
         run: |
@@ -135,7 +135,7 @@ jobs:
     name: Check for Hardcoded Secrets
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install gitleaks
         run: |
