@@ -101,6 +101,21 @@ spec:
                 configMapKeyRef:
                   name: pamawas-config
                   key: OTEL_EXPORTER_OTLP_ENDPOINT
+            - name: PROMETHEUS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: pamawas-config
+                  key: PROMETHEUS_URL
+            - name: AVAILABILITY_METRIC
+              valueFrom:
+                configMapKeyRef:
+                  name: pamawas-config
+                  key: AVAILABILITY_METRIC
+            - name: REPORT_TEMPLATE
+              valueFrom:
+                configMapKeyRef:
+                  name: pamawas-config
+                  key: REPORT_TEMPLATE
           livenessProbe:
             httpGet:
               path: /healthz

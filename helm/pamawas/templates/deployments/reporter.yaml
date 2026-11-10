@@ -101,6 +101,21 @@ spec:
                 configMapKeyRef:
                   name: {{ include "pamawas.fullname" . }}-config
                   key: OTEL_EXPORTER_OTLP_ENDPOINT
+            - name: PROMETHEUS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: PROMETHEUS_URL
+            - name: AVAILABILITY_METRIC
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: AVAILABILITY_METRIC
+            - name: REPORT_TEMPLATE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "pamawas.fullname" . }}-config
+                  key: REPORT_TEMPLATE
           {{- include "pamawas.probes" (merge .Values.reporter.probes (dict "port" $.Values.commonConfig.port)) | nindent 10 }}
           resources:
             {{- toYaml .Values.reporter.resources | nindent 12 }}

@@ -28,11 +28,13 @@ data:
   SCHEDULER_MODE: "auto"
 
   # Reporter reports are generated from scheduler-created requests.
+  PROMETHEUS_URL: "http://prometheus.example.com:9090"
+  AVAILABILITY_METRIC: "up"
+  REPORT_TEMPLATE: "v2"
 
   # Investigator
   LLM_BASE_URL: "https://api.openai.com/v1"
   LLM_MODEL: "gpt-4o-mini"
-  PROMETHEUS_URL: "http://prometheus.example.com:9090"
   LOKI_URL: "http://loki.example.com:3100"
   MAX_TOOL_CALLS: "6"
   PROMETHEUS_TIMEOUT_SECONDS: "30"

@@ -117,6 +117,9 @@ reporter:
     repository: ghcr.io/pamawas/pamawas-reporter
     tag: latest
     pullPolicy: IfNotPresent
+  config:
+    availabilityMetric: "up"
+    reportTemplate: "v2"
   resources:
     requests:
       cpu: 100m

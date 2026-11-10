@@ -28,3 +28,7 @@ data:
   PROMETHEUS_URL: "{{ .Values.investigator.config.prometheusUrl }}"
   LOKI_URL: "{{ .Values.investigator.config.lokiUrl }}"
   MAX_TOOL_CALLS: "{{ .Values.investigator.config.maxToolCalls }}"
+
+  # Reporter reports are generated from scheduler-created requests.
+  AVAILABILITY_METRIC: "{{ .Values.reporter.config.availabilityMetric }}"
+  REPORT_TEMPLATE: "{{ .Values.reporter.config.reportTemplate }}"
