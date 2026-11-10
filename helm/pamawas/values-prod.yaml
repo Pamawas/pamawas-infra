@@ -116,9 +116,6 @@ reporter:
     limits:
       cpu: 500m
       memory: 512Mi
-  config:
-    reportInterval: 1h
-    mode: auto
   probes:
     liveness:
       initialDelaySeconds: 10
@@ -228,7 +225,7 @@ ingress:
   hosts:
     - host: pamawas.example.com
       paths:
-        - path: /webhook
+        - path: /api/v1/webhooks
           service: ingest
         - path: /healthz
           service: ingest
@@ -236,17 +233,17 @@ ingress:
           service: ingest
         - path: /metrics
           service: ingest
-        - path: /trigger
+        - path: /api/v1/trigger
           service: correlator
-        - path: /status
+        - path: /api/v1/status
           service: correlator
-        - path: /investigate
+        - path: /api/v1/investigations
           service: investigator
-        - path: /report
+        - path: /api/v1/reports
           service: reporter
-        - path: /trigger/daily
+        - path: /api/v1/report-requests/daily
           service: scheduler
-        - path: /trigger/high-severity
+        - path: /api/v1/report-requests/high-severity
           service: scheduler
   tls:
     - secretName: pamawas-tls

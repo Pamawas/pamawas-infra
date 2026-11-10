@@ -81,15 +81,17 @@ ingress:
   hosts:
     - host: pamawas.example.com
       paths:
-        - path: /webhook
+        - path: /api/v1/webhooks
           service: ingest
-        - path: /trigger
+        - path: /api/v1/trigger
           service: correlator
-        - path: /investigate
+        - path: /api/v1/investigations
           service: investigator
-        - path: /report
+        - path: /api/v1/reports
           service: reporter
-        - path: /trigger/daily
+        - path: /api/v1/report-requests/daily
+          service: scheduler
+        - path: /api/v1/report-requests/high-severity
           service: scheduler
   tls:
     - secretName: pamawas-tls

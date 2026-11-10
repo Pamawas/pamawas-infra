@@ -23,9 +23,6 @@ data:
   ENABLE_HIGH_SEVERITY_ALERT: "{{ .Values.scheduler.config.enableHighSeverityAlert }}"
   SCHEDULER_MODE: "{{ .Values.scheduler.config.mode }}"
   
-  REPORT_INTERVAL: "{{ .Values.reporter.config.reportInterval }}"
-  REPORTER_MODE: "{{ .Values.reporter.config.mode }}"
-  
   LLM_BASE_URL: "{{ .Values.investigator.config.llmBaseUrl }}"
   LLM_MODEL: "{{ .Values.investigator.config.llmModel }}"
   PROMETHEUS_URL: "{{ .Values.investigator.config.prometheusUrl }}"

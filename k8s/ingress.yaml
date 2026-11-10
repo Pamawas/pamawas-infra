@@ -21,7 +21,7 @@ spec:
     - host: pamawas.example.com
       http:
         paths:
-          - path: /webhook
+          - path: /api/v1/webhooks
             pathType: Prefix
             backend:
               service:
@@ -49,42 +49,42 @@ spec:
                 name: pamawas-ingest
                 port:
                   number: 8080
-          - path: /trigger
+          - path: /api/v1/trigger
             pathType: Prefix
             backend:
               service:
                 name: pamawas-correlator
                 port:
                   number: 8080
-          - path: /status
+          - path: /api/v1/status
             pathType: Prefix
             backend:
               service:
                 name: pamawas-correlator
                 port:
                   number: 8080
-          - path: /investigate
+          - path: /api/v1/investigations
             pathType: Prefix
             backend:
               service:
                 name: pamawas-investigator
                 port:
                   number: 8080
-          - path: /report
+          - path: /api/v1/reports
             pathType: Prefix
             backend:
               service:
                 name: pamawas-reporter
                 port:
                   number: 8080
-          - path: /trigger/daily
+          - path: /api/v1/report-requests/daily
             pathType: Exact
             backend:
               service:
                 name: pamawas-scheduler
                 port:
                   number: 8080
-          - path: /trigger/high-severity
+          - path: /api/v1/report-requests/high-severity
             pathType: Exact
             backend:
               service:

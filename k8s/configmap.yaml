@@ -27,9 +27,7 @@ data:
   ENABLE_HIGH_SEVERITY_ALERT: "true"
   SCHEDULER_MODE: "auto"
 
-  # Reporter
-  REPORT_INTERVAL: "1h"
-  REPORTER_MODE: "auto"
+  # Reporter reports are generated from scheduler-created requests.
 
   # Investigator
   LLM_BASE_URL: "https://api.openai.com/v1"
@@ -37,3 +35,6 @@ data:
   PROMETHEUS_URL: "http://prometheus.example.com:9090"
   LOKI_URL: "http://loki.example.com:3100"
   MAX_TOOL_CALLS: "6"
+  PROMETHEUS_TIMEOUT_SECONDS: "30"
+  LOKI_TIMEOUT_SECONDS: "30"
+  LOKI_MAX_LOG_LINES: "10000"

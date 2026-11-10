@@ -155,7 +155,6 @@ services:
       EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
       EMAIL_FROM: "${EMAIL_FROM}"
       EMAIL_TO: "${EMAIL_TO}"
-      REPORT_INTERVAL: "1h"
       LOG_LEVEL: "info"
       ENVIRONMENT: "development"
       # Optional observability

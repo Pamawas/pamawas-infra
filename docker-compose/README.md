@@ -101,9 +101,9 @@ docker compose up -d pamawas-ingest pamawas-correlator pamawas-reporter pamawas-
 docker compose up -d pamawas-investigator
 
 # 5. Test webhook
-curl -X POST http://localhost:8080/webhook/generic \
+curl -X POST http://localhost:8080/api/v1/webhooks/generic \
   -H "Content-Type: application/json" \
-  -d '{"source": "test", "data": {"message": "hello"}}'
+  -d '{"schema_version": 1, "type": "event", "occurred_at": "2026-08-16T01:47:00Z", "service": "payment-api", "environment": "production", "severity": "high", "title": "test event", "status": "firing"}'
 ```
 
 ## Connecting to External Observability

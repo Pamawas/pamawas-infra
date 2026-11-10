@@ -38,7 +38,6 @@ Sensitive values. **Replace all placeholder values** before applying:
 - `DATABASE_URL`: PostgreSQL connection string with credentials
 - `LLM_API_KEY`: OpenAI/Anthropic/Ollama API key
 - Delivery credentials (Discord, Telegram, Email)
-- `REPORT_TEMPLATE`: Optional custom report template
 
 ## Services Deployed
 
@@ -66,14 +65,14 @@ Ingress configured for nginx with TLS via cert-manager. Update `pamawas.example.
 
 ```yaml
 # ingress.yaml paths
-/webhook*        -> pamawas-ingest
+/api/v1/webhooks* -> pamawas-ingest
 /healthz, /ready -> pamawas-ingest
-/trigger*        -> pamawas-correlator
-/status          -> pamawas-correlator
-/investigate*    -> pamawas-investigator
-/report*         -> pamawas-reporter
-/trigger/daily   -> pamawas-scheduler
-/trigger/high-severity -> pamawas-scheduler
+/api/v1/trigger* -> pamawas-correlator
+/api/v1/status   -> pamawas-correlator
+/api/v1/investigations* -> pamawas-investigator
+/api/v1/reports* -> pamawas-reporter
+/api/v1/report-requests/daily -> pamawas-scheduler
+/api/v1/report-requests/high-severity -> pamawas-scheduler
 ```
 
 ## ServiceAccount

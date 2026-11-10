@@ -71,6 +71,21 @@ spec:
                 configMapKeyRef:
                   name: pamawas-config
                   key: MAX_TOOL_CALLS
+            - name: PROMETHEUS_TIMEOUT_SECONDS
+              valueFrom:
+                configMapKeyRef:
+                  name: pamawas-config
+                  key: PROMETHEUS_TIMEOUT_SECONDS
+            - name: LOKI_TIMEOUT_SECONDS
+              valueFrom:
+                configMapKeyRef:
+                  name: pamawas-config
+                  key: LOKI_TIMEOUT_SECONDS
+            - name: LOKI_MAX_LOG_LINES
+              valueFrom:
+                configMapKeyRef:
+                  name: pamawas-config
+                  key: LOKI_MAX_LOG_LINES
             - name: LOG_LEVEL
               valueFrom:
                 configMapKeyRef:
